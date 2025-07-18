@@ -1,0 +1,10 @@
+arb_dir: lib/l10n
+synthetic-package: false
+template_arbs:
+  - lib/l10n/app_ja.arb       # 新しい日本語のテンプレートファイル
+output_dir: lib/l10n/generated
+preferred_locales:
+  - ja
+  - en
+
+

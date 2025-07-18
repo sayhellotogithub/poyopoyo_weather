@@ -1,0 +1,11 @@
+{
+  "@@locale": "en",
+  "appTitle": "PoyoPoyo Weather",
+  "settings": "Settings",
+  "theme_setting": "🌗 Theme Setting",
+  "language_setting": "🌐 Language Setting",
+  "light": "Light",
+  "dark": "Dark",
+  "japanese": "Japanese",
+  "english": "English"
+}
