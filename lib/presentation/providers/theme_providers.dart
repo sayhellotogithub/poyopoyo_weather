@@ -7,9 +7,10 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:poyopoyo_weather/data/repositories_impl/theme_repository_impl.dart';
 import 'package:poyopoyo_weather/domain/repositories/theme_repository.dart';
 import 'package:poyopoyo_weather/presentation/theme/app_theme.dart';
+
+import '../../data/repositories/theme_repository_impl.dart';
 
 final themeModeProvider = StateProvider<ThemeMode>((ref) {
   return ThemeMode.light; // 可以后续 load 初始化
