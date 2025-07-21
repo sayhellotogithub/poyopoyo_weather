@@ -16,6 +16,6 @@ class ApiSuccess<T> extends ApiResponse<T> {
 }
 
 class ApiFailure<T> extends ApiResponse<T> {
-  final String message;
-  const ApiFailure(this.message);
+  final String messageKey;
+  const ApiFailure(this.messageKey);
 }

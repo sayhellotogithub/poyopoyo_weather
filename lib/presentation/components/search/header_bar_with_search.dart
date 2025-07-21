@@ -5,14 +5,8 @@
 // -------------------------------------------------------------------
 
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:poyopoyo_weather/l10n/app_localizations.dart';
-import 'package:poyopoyo_weather/presentation/components/search/search_header_view_model.dart';
 import 'package:poyopoyo_weather/presentation/widgets/settings_button.dart';
-
-final searchHeaderViewModelProvider = ChangeNotifierProvider(
-  (ref) => SearchHeaderViewModel(),
-);
 
 class HeaderBarWithSearch extends StatelessWidget {
   final bool isSearching;
@@ -47,7 +41,6 @@ class HeaderBarWithSearch extends StatelessWidget {
               child: isSearching
                   ? const SizedBox.shrink()
                   : Padding(
-                      key: const ValueKey('title'),
                       padding: const EdgeInsets.fromLTRB(16, 50, 16, 4),
                       child: Text(
                         loc.appTitle,
@@ -70,8 +63,11 @@ class HeaderBarWithSearch extends StatelessWidget {
                       onTap: onTapSearch,
                       onChanged: onChanged,
                       decoration: InputDecoration(
-                        hintText: '都市を検索',
-                        hintStyle: const TextStyle(color: Colors.white30),
+                        hintText: loc.searchHint,
+                        hintStyle: const TextStyle(
+                          color: Colors.white30,
+                          fontSize: 14,
+                        ),
                         prefixIcon: const Icon(
                           Icons.search,
                           color: Colors.white30,
@@ -91,9 +87,8 @@ class HeaderBarWithSearch extends StatelessWidget {
                     AnimatedSwitcher(
                       duration: const Duration(milliseconds: 200),
                       child: TextButton(
-                        key: const ValueKey('cancel'),
                         onPressed: onCancelSearch,
-                        child: const Text('キャンセル'),
+                        child: Text(loc.cancel, style: TextStyle(fontSize: 16)),
                       ),
                     ),
                 ],

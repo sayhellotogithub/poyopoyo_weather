@@ -31,4 +31,33 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get english => 'English';
+
+  @override
+  String get errorTimeout => 'Connection timed out';
+
+  @override
+  String get errorServer => 'Server error occurred';
+
+  @override
+  String get errorUnknown => 'An unknown error occurred';
+
+  @override
+  String get cityNotFound => 'City not found';
+
+  @override
+  String get searchHint => 'Search city';
+
+  @override
+  String get cancel => 'Cancel';
+
+  @override
+  String get dataNotFound => 'No data found';
+
+  @override
+  String get fiveDayForecast => '5-day forecast';
+
+  @override
+  String tempHighLow(String max, String min) {
+    return 'High $max° Low $min°';
+  }
 }

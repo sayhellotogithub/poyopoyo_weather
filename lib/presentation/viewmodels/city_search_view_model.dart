@@ -58,7 +58,7 @@ class CitySearchViewModel extends StateNotifier<CitySearchState> {
       );
     } else if (res is ApiFailure) {
       state = state.copyWith(
-        error: (res as ApiFailure).message,
+        error: (res as ApiFailure).messageKey,
         isLoading: false,
       );
     }

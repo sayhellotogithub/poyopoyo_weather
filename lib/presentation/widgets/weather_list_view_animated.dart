@@ -4,12 +4,11 @@
 // Description:
 // -------------------------------------------------------------------
 import 'package:flutter/material.dart';
-import 'package:poyopoyo_weather/domain/entities/merged_weather.dart';
 import 'package:poyopoyo_weather/domain/entities/weather.dart';
 import 'package:poyopoyo_weather/presentation/widgets/weather_card.dart';
 
 class WeatherListViewAnimated extends StatelessWidget {
-  final List<MergedWeather> weatherList;
+  final List<Weather> weatherList;
   final bool isSearching;
   final void Function(Weather) onItemTap;
 
@@ -28,8 +27,8 @@ class WeatherListViewAnimated extends StatelessWidget {
         delegate: SliverChildBuilderDelegate((context, index) {
           final weather = weatherList[index];
           return InkWell(
-            onTap: () => onItemTap(weather.current),
-            child: WeatherCard(weather: weather.current),
+            onTap: () => onItemTap(weather),
+            child: WeatherCard(weather: weather),
           );
         }, childCount: weatherList.length),
       ),

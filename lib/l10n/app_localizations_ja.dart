@@ -31,4 +31,33 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get english => '英語';
+
+  @override
+  String get errorTimeout => '接続がタイムアウトしました';
+
+  @override
+  String get errorServer => 'サーバーエラーが発生しました';
+
+  @override
+  String get errorUnknown => '不明なエラーが発生しました';
+
+  @override
+  String get cityNotFound => '都市が見つかりませんでした';
+
+  @override
+  String get searchHint => '都市を検索';
+
+  @override
+  String get cancel => 'キャンセル';
+
+  @override
+  String get dataNotFound => 'データが見つかりませんでした';
+
+  @override
+  String get fiveDayForecast => '5日間予報';
+
+  @override
+  String tempHighLow(String max, String min) {
+    return '最高 $max° 最低 $min°';
+  }
 }

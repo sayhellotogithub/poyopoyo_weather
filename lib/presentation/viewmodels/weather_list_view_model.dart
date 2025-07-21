@@ -4,17 +4,15 @@
 // Description:
 // -------------------------------------------------------------------
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:poyopoyo_weather/application/usecases/fetch_forecaset_by_location_usecase.dart';
-import 'package:poyopoyo_weather/domain/entities/merged_weather.dart';
 
 import '../../application/usecases/fetch_current_weather_usecase.dart';
-import '../../application/usecases/fetch_forecast_usecase.dart';
 import '../../application/usecases/fetch_weather_by_location_usecase.dart';
+import '../../core/base/state_with_error_key.dart';
 import '../../core/network/api_response.dart';
-import '../utils/merge_responses.dart';
+import '../../domain/entities/weather.dart';
 
-class WeatherListState {
-  final List<MergedWeather> weatherList;
+class WeatherListState implements StateWithErrorKey {
+  final List<Weather> weatherList;
   final bool isLoading;
   final String? error;
 
@@ -25,7 +23,7 @@ class WeatherListState {
   });
 
   WeatherListState copyWith({
-    List<MergedWeather>? weatherList,
+    List<Weather>? weatherList,
     bool? isLoading,
     String? error,
   }) {
@@ -35,19 +33,18 @@ class WeatherListState {
       error: error,
     );
   }
+
+  @override
+  String? get errorKey => error;
 }
 
 class WeatherListViewModel extends StateNotifier<WeatherListState> {
   final FetchWeatherByLocationUseCase fetchWeatherByLocationUseCase;
-  final FetchForecastByLocationUseCase fetchForecastByLocationUseCase;
-  final FetchForecastUseCase forecastUseCase;
   final FetchCurrentWeatherUseCase currentWeatherUseCase;
 
   WeatherListViewModel({
     required this.currentWeatherUseCase,
-    required this.forecastUseCase,
     required this.fetchWeatherByLocationUseCase,
-    required this.fetchForecastByLocationUseCase,
   }) : super(WeatherListState());
 
   Future<void> addWeatherByLocation(double lat, double lon, String lang) async {
@@ -57,48 +54,43 @@ class WeatherListViewModel extends StateNotifier<WeatherListState> {
       lon,
       lang: lang,
     );
-    final forecastRes = await fetchForecastByLocationUseCase.execute(
-      lat,
-      lon,
-      lang: lang,
-    );
 
-    if (currentRes is ApiFailure || forecastRes is ApiFailure) {
-      final message = (currentRes is ApiFailure)
-          ? (currentRes as ApiFailure).message
-          : (forecastRes as ApiFailure).message;
-      state = state.copyWith(isLoading: false, error: message);
+    if (currentRes is ApiFailure) {
+      state = state.copyWith(
+        isLoading: false,
+        error: (currentRes as ApiFailure).messageKey,
+      );
       return;
     }
-
-    final merged = mergeResponses(currentRes, forecastRes);
-    if (merged != null) {
-      final updatedList = [...state.weatherList, merged];
+    if (currentRes is ApiSuccess) {
+      final updatedList = <Weather>[
+        ...state.weatherList,
+        (currentRes as ApiSuccess).data,
+      ];
       state = state.copyWith(weatherList: updatedList, isLoading: false);
-    } else {
-      state = state.copyWith(isLoading: false, error: 'データ統合失敗');
     }
   }
 
   Future<void> addWeatherByCity(String cityName, String lang) async {
     state = state.copyWith(isLoading: true);
-    final currentRes = await currentWeatherUseCase.execute(cityName);
-    final forecastRes = await forecastUseCase.execute(cityName, lang: lang);
+    final currentRes = await currentWeatherUseCase.execute(
+      cityName,
+      lang: lang,
+    );
 
-    if (currentRes is ApiFailure || forecastRes is ApiFailure) {
-      final message = (currentRes is ApiFailure)
-          ? (currentRes as ApiFailure).message
-          : (forecastRes as ApiFailure).message;
-      state = state.copyWith(isLoading: false, error: message);
+    if (currentRes is ApiFailure) {
+      state = state.copyWith(
+        isLoading: false,
+        error: (currentRes as ApiFailure).messageKey,
+      );
       return;
     }
-
-    final merged = mergeResponses(currentRes, forecastRes);
-    if (merged != null) {
-      final updatedList = [...state.weatherList, merged];
+    if (currentRes is ApiSuccess) {
+      final updatedList = <Weather>[
+        ...state.weatherList,
+        (currentRes as ApiSuccess).data,
+      ];
       state = state.copyWith(weatherList: updatedList, isLoading: false);
-    } else {
-      state = state.copyWith(isLoading: false, error: 'データ統合失敗');
     }
   }
 }

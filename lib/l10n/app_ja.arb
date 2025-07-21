@@ -7,5 +7,25 @@
   "light": "ライト",
   "dark": "ダーク",
   "japanese": "日本語",
-  "english": "英語"
+  "english": "英語",
+  "errorTimeout": "接続がタイムアウトしました",
+  "errorServer": "サーバーエラーが発生しました",
+  "errorUnknown": "不明なエラーが発生しました",
+  "cityNotFound": "都市が見つかりませんでした",
+  "searchHint": "都市を検索",
+  "cancel": "キャンセル",
+  "dataNotFound": "データが見つかりませんでした",
+  "fiveDayForecast": "5日間予報",
+  "tempHighLow": "最高 {max}° 最低 {min}°",
+  "@tempHighLow": {
+    "description": "最高気温と最低気温の表示",
+    "placeholders": {
+      "max": {
+        "type": "String"
+      },
+      "min": {
+        "type": "String"
+      }
+    }
+  }
 }

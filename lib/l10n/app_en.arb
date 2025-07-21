@@ -7,5 +7,25 @@
   "light": "Light",
   "dark": "Dark",
   "japanese": "Japanese",
-  "english": "English"
+  "english": "English",
+  "errorTimeout": "Connection timed out",
+  "errorServer": "Server error occurred",
+  "errorUnknown": "An unknown error occurred",
+  "cityNotFound": "City not found",
+  "searchHint": "Search city",
+  "cancel": "Cancel",
+  "dataNotFound": "No data found",
+  "fiveDayForecast": "5-day forecast",
+  "tempHighLow": "High {max}° Low {min}°",
+  "@tempHighLow": {
+    "description": "Display high and low temperature",
+    "placeholders": {
+      "max": {
+        "type": "String"
+      },
+      "min": {
+        "type": "String"
+      }
+    }
+  }
 }

@@ -145,6 +145,60 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'English'**
   String get english;
+
+  /// No description provided for @errorTimeout.
+  ///
+  /// In en, this message translates to:
+  /// **'Connection timed out'**
+  String get errorTimeout;
+
+  /// No description provided for @errorServer.
+  ///
+  /// In en, this message translates to:
+  /// **'Server error occurred'**
+  String get errorServer;
+
+  /// No description provided for @errorUnknown.
+  ///
+  /// In en, this message translates to:
+  /// **'An unknown error occurred'**
+  String get errorUnknown;
+
+  /// No description provided for @cityNotFound.
+  ///
+  /// In en, this message translates to:
+  /// **'City not found'**
+  String get cityNotFound;
+
+  /// No description provided for @searchHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Search city'**
+  String get searchHint;
+
+  /// No description provided for @cancel.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel'**
+  String get cancel;
+
+  /// No description provided for @dataNotFound.
+  ///
+  /// In en, this message translates to:
+  /// **'No data found'**
+  String get dataNotFound;
+
+  /// No description provided for @fiveDayForecast.
+  ///
+  /// In en, this message translates to:
+  /// **'5-day forecast'**
+  String get fiveDayForecast;
+
+  /// Display high and low temperature
+  ///
+  /// In en, this message translates to:
+  /// **'High {max}° Low {min}°'**
+  String tempHighLow(String max, String min);
 }
 
 class _AppLocalizationsDelegate

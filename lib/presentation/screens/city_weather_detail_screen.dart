@@ -5,9 +5,10 @@
 // -------------------------------------------------------------------
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:logger/logger.dart';
 
 import '../../domain/entities/forecast_weather.dart';
+import '../../l10n/app_localizations.dart';
+import '../models/daily_forecast_group.dart';
 import '../providers/locale_provider.dart';
 import '../providers/weather_providers.dart';
 import '../utils/date_time_utils.dart';
@@ -38,25 +39,28 @@ class _CityWeatherDetailScreenState
 
   @override
   Widget build(BuildContext context) {
-    final state = ref.watch(weatherViewModelProvider);
-    final weather = state.current;
-    final forecastList = state.forecast;
+    final viewModel = ref.watch(weatherViewModelProvider);
+    final weather = viewModel.current;
+    final forecastList = viewModel.forecast;
     final locale = ref.watch(localeProvider);
+    final loc = AppLocalizations.of(context)!;
 
-    if (state.isLoading) {
+    if (viewModel.isLoading) {
       return const Scaffold(body: Center(child: CircularProgressIndicator()));
     }
 
-    if (state.errorMessage != null) {
-      return Scaffold(body: Center(child: Text(state.errorMessage!)));
+    if (viewModel.errorMessage != null) {
+      return Scaffold(body: Center(child: Text(viewModel.errorMessage!)));
     }
 
     if (weather == null || forecastList == null || forecastList.isEmpty) {
-      return const Scaffold(body: Center(child: Text('データが見つかりませんでした')));
+      return Scaffold(body: Center(child: Text(loc.dataNotFound)));
     }
 
     final hourly = forecastList.take(8).toList();
-    final dailyForecast = _groupForecastByDay(forecastList);
+    final List<DailyForecastGroup> groupedForecast = ref
+        .watch(weatherViewModelProvider.notifier)
+        .groupedForecastByDay;
 
     return Scaffold(
       appBar: AppBar(title: Text(weather.city)),
@@ -71,7 +75,7 @@ class _CityWeatherDetailScreenState
             return Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                _buildCurrentWeather(weather, fontSize),
+                _buildCurrentWeather(weather, fontSize, loc),
                 const SizedBox(height: 16),
                 const Divider(),
                 _buildHourlyForecast(
@@ -82,9 +86,10 @@ class _CityWeatherDetailScreenState
                 ),
                 const Divider(),
                 _buildDailyForecast(
-                  dailyForecast,
+                  groupedForecast,
                   fontSize,
                   locale.languageCode,
+                  loc,
                 ),
               ],
             );
@@ -94,7 +99,11 @@ class _CityWeatherDetailScreenState
     );
   }
 
-  Widget _buildCurrentWeather(dynamic weather, double fontSize) {
+  Widget _buildCurrentWeather(
+    dynamic weather,
+    double fontSize,
+    AppLocalizations loc,
+  ) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -109,7 +118,10 @@ class _CityWeatherDetailScreenState
           ],
         ),
         Text(
-          '最高 ${weather.maxTemp.toInt()}° 最低 ${weather.minTemp.toInt()}°',
+          loc.tempHighLow(
+            weather.maxTemp.toInt().toString(),
+            weather.minTemp.toInt().toString(),
+          ),
           style: TextStyle(fontSize: fontSize),
         ),
       ],
@@ -152,15 +164,16 @@ class _CityWeatherDetailScreenState
   }
 
   Widget _buildDailyForecast(
-    List<Map<String, dynamic>> dailyForecast,
+    List<DailyForecastGroup> dailyForecast,
     double fontSize,
     String locale,
+    AppLocalizations loc,
   ) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          '5日間予報',
+          loc.fiveDayForecast,
           style: TextStyle(fontWeight: FontWeight.bold, fontSize: fontSize + 2),
         ),
         const SizedBox(height: 8),
@@ -169,13 +182,13 @@ class _CityWeatherDetailScreenState
             padding: const EdgeInsets.symmetric(vertical: 4),
             child: Row(
               children: [
-                Text(day['day'], style: TextStyle(fontSize: fontSize)),
+                Text(day.day, style: TextStyle(fontSize: fontSize)),
                 const SizedBox(width: 10),
                 const Icon(Icons.cloud, size: 20),
                 const SizedBox(width: 20),
                 Expanded(
                   child: HourlyTempChart(
-                    hourly: List<ForecastWeather>.from(day['hourly']),
+                    hourly: List<ForecastWeather>.from(day.hourly),
                     locale: locale,
                     height: 50, // 可选高度压缩一点
                   ),
@@ -187,38 +200,5 @@ class _CityWeatherDetailScreenState
         ),
       ],
     );
-  }
-
-  List<Map<String, dynamic>> _groupForecastByDay(List<ForecastWeather> list) {
-    final map = <String, List<ForecastWeather>>{};
-    list.sort((a, b) => a.dateTime.compareTo(b.dateTime)); // 保证顺序
-    for (var item in list) {
-      Logger().d('📅 ${item.dateTime} 🌡️ ${item.temperature}°C');
-    }
-    for (var item in list) {
-      final day = DateTimeUtils.extractDate(item.dateTime);
-      map.putIfAbsent(day, () => []).add(item);
-    }
-    final today = DateTimeUtils.extractDate(DateTime.now().toIso8601String());
-
-    return map.entries
-        .where((entry) => entry.key != today) // 🚫 除外今天
-        .map((entry) {
-          final day = entry.key;
-          final values = entry.value;
-          return {
-            'day': day.substring(5), // "MM-DD"
-            'hourly': values,
-            'max': values
-                .map((e) => e.temperature)
-                .reduce((a, b) => a > b ? a : b)
-                .toInt(),
-            'min': values
-                .map((e) => e.temperature)
-                .reduce((a, b) => a < b ? a : b)
-                .toInt(),
-          };
-        })
-        .toList();
   }
 }

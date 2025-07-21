@@ -4,6 +4,11 @@
 // Description:
 // -------------------------------------------------------------------
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+final searchHeaderViewModelProvider = ChangeNotifierProvider.autoDispose(
+  (ref) => SearchHeaderViewModel(),
+);
 
 class SearchHeaderViewModel extends ChangeNotifier {
   final TextEditingController controller = TextEditingController();
