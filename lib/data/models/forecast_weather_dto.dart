@@ -4,7 +4,10 @@
 // Description:
 // -------------------------------------------------------------------
 import 'package:json_annotation/json_annotation.dart';
+import 'package:poyopoyo_weather/data/models/weather_info_dto.dart';
 import 'package:poyopoyo_weather/domain/entities/forecast_weather.dart';
+
+import 'main_info_dto.dart';
 
 part 'forecast_weather_dto.g.dart';
 
@@ -16,9 +19,8 @@ class ForecastWeatherDto {
   @JsonKey(name: 'dt_txt')
   final String dateTimeText;
 
-  final Map<String, dynamic> main;
-
-  final List<dynamic> weather;
+  final MainInfoDto main;
+  final List<WeatherInfoDto> weather;
 
   ForecastWeatherDto({
     required this.dt,
@@ -33,11 +35,15 @@ class ForecastWeatherDto {
   Map<String, dynamic> toJson() => _$ForecastWeatherDtoToJson(this);
 
   ForecastWeather toEntity() {
+    final localDateTime = DateTime.fromMillisecondsSinceEpoch(
+      dt * 1000,
+    ).toLocal();
+
     return ForecastWeather(
-      dateTime: dateTimeText,
-      temperature: (main['temp'] as num).toDouble(),
-      condition: weather.isNotEmpty ? weather[0]['description'] ?? '' : '',
-      icon: weather.isNotEmpty ? weather[0]['icon'] ?? '' : '',
+      dateTime: localDateTime.toIso8601String(),
+      temperature: main.temp,
+      condition: weather.isNotEmpty ? weather[0].description : '',
+      icon: weather.isNotEmpty ? weather[0].icon : '',
     );
   }
 }

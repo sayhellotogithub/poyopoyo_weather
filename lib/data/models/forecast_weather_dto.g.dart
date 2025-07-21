@@ -10,8 +10,10 @@ ForecastWeatherDto _$ForecastWeatherDtoFromJson(Map<String, dynamic> json) =>
     ForecastWeatherDto(
       dt: (json['dt'] as num).toInt(),
       dateTimeText: json['dt_txt'] as String,
-      main: json['main'] as Map<String, dynamic>,
-      weather: json['weather'] as List<dynamic>,
+      main: MainInfoDto.fromJson(json['main'] as Map<String, dynamic>),
+      weather: (json['weather'] as List<dynamic>)
+          .map((e) => WeatherInfoDto.fromJson(e as Map<String, dynamic>))
+          .toList(),
     );
 
 Map<String, dynamic> _$ForecastWeatherDtoToJson(ForecastWeatherDto instance) =>

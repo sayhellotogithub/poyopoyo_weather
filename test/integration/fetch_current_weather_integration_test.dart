@@ -39,8 +39,8 @@ void main() async {
         print('✅ Success: ${result.data.city}, ${result.data.temperature}°C');
         expect(result.data.city, cityName);
       } else if (result is ApiFailure<Weather>) {
-        print('❌ Failure: ${result.message}');
-        fail('API returned failure: ${result.message}');
+        print('❌ Failure: ${result.messageKey}');
+        fail('API returned failure: ${result.messageKey}');
       }
     },
   );

@@ -68,6 +68,31 @@ class MockWeatherRepository extends _i1.Mock implements _i2.WeatherRepository {
           as _i3.Future<_i4.ApiResponse<_i5.Weather>>);
 
   @override
+  _i3.Future<_i4.ApiResponse<_i5.Weather>> fetchCurrentWeatherByLocation({
+    required double? lat,
+    required double? lon,
+    String? lang = 'ja',
+  }) =>
+      (super.noSuchMethod(
+            Invocation.method(#fetchCurrentWeatherByLocation, [], {
+              #lat: lat,
+              #lon: lon,
+              #lang: lang,
+            }),
+            returnValue: _i3.Future<_i4.ApiResponse<_i5.Weather>>.value(
+              _i6.dummyValue<_i4.ApiResponse<_i5.Weather>>(
+                this,
+                Invocation.method(#fetchCurrentWeatherByLocation, [], {
+                  #lat: lat,
+                  #lon: lon,
+                  #lang: lang,
+                }),
+              ),
+            ),
+          )
+          as _i3.Future<_i4.ApiResponse<_i5.Weather>>);
+
+  @override
   _i3.Future<_i4.ApiResponse<List<_i7.ForecastWeather>>> fetchForecast({
     required String? cityName,
     String? lang = 'ja',
@@ -83,6 +108,33 @@ class MockWeatherRepository extends _i1.Mock implements _i2.WeatherRepository {
                     this,
                     Invocation.method(#fetchForecast, [], {
                       #cityName: cityName,
+                      #lang: lang,
+                    }),
+                  ),
+                ),
+          )
+          as _i3.Future<_i4.ApiResponse<List<_i7.ForecastWeather>>>);
+
+  @override
+  _i3.Future<_i4.ApiResponse<List<_i7.ForecastWeather>>>
+  fetchForecastByLocation({
+    required double? lat,
+    required double? lon,
+    String? lang = 'ja',
+  }) =>
+      (super.noSuchMethod(
+            Invocation.method(#fetchForecastByLocation, [], {
+              #lat: lat,
+              #lon: lon,
+              #lang: lang,
+            }),
+            returnValue:
+                _i3.Future<_i4.ApiResponse<List<_i7.ForecastWeather>>>.value(
+                  _i6.dummyValue<_i4.ApiResponse<List<_i7.ForecastWeather>>>(
+                    this,
+                    Invocation.method(#fetchForecastByLocation, [], {
+                      #lat: lat,
+                      #lon: lon,
                       #lang: lang,
                     }),
                   ),

@@ -29,6 +29,7 @@ void main() {
     minTemp: 22.0,
     condition: '晴れ',
     time: '12:00',
+    icon: '01d',
   );
 
   final dummyForecast = [
@@ -36,11 +37,13 @@ void main() {
       dateTime: '2025-07-20 12:00',
       temperature: 26.0,
       condition: '晴れ',
+      icon: '01d',
     ),
     ForecastWeather(
       dateTime: '2025-07-20 15:00',
       temperature: 27.0,
       condition: 'くもり',
+      icon: '02d',
     ),
   ];
 
@@ -62,7 +65,7 @@ void main() {
       mockForecastUseCase.execute(testCity),
     ).thenAnswer((_) async => ApiSuccess(dummyForecast));
 
-    await viewModel.loadWeather(testCity);
+    await viewModel.loadWeather(testCity,"ja");
 
     expect(viewModel.state.isLoading, false);
     expect(viewModel.state.current?.city, 'Tokyo');
@@ -78,7 +81,7 @@ void main() {
       mockForecastUseCase.execute(testCity),
     ).thenAnswer((_) async => const ApiFailure('取得失敗'));
 
-    await viewModel.loadWeather(testCity);
+    await viewModel.loadWeather(testCity,"ja");
 
     expect(viewModel.state.isLoading, false);
     expect(viewModel.state.current, dummyWeather);
@@ -94,7 +97,7 @@ void main() {
       mockForecastUseCase.execute(testCity),
     ).thenAnswer((_) async => const ApiFailure('ネットワークエラーB'));
 
-    await viewModel.loadWeather(testCity);
+    await viewModel.loadWeather(testCity,"ja");
 
     expect(viewModel.state.isLoading, false);
     expect(viewModel.state.current, isNull);

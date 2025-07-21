@@ -54,6 +54,6 @@ void main() {
     final result = await useCase.execute(city);
 
     expect(result, isA<ApiFailure<Weather>>());
-    expect((result as ApiFailure).message, 'ネットワークエラー');
+    expect((result as ApiFailure).messageKey, 'ネットワークエラー');
   });
 }
