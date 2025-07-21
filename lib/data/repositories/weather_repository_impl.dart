@@ -26,7 +26,7 @@ class WeatherRepositoryImpl implements WeatherRepository {
   }) {
     return safeRequest(() async {
       final res = await dio.get(
-        'weather',
+        'data/2.5/weather',
         queryParameters: {
           'q': cityName,
           'appid': apiKey,
@@ -46,9 +46,59 @@ class WeatherRepositoryImpl implements WeatherRepository {
   }) {
     return safeRequest(() async {
       final res = await dio.get(
-        'forecast',
+        'data/2.5/forecast',
         queryParameters: {
           'q': cityName,
+          'appid': apiKey,
+          'units': 'metric',
+          'lang': lang,
+        },
+      );
+
+      final list = res.data['list'] as List<dynamic>;
+      final forecasts = list
+          .map((e) => ForecastWeatherDto.fromJson(e).toEntity())
+          .toList();
+
+      return forecasts;
+    });
+  }
+
+  @override
+  Future<ApiResponse<Weather>> fetchCurrentWeatherByLocation({
+    required double lat,
+    required double lon,
+    String lang = 'ja',
+  }) {
+    return safeRequest(() async {
+      final res = await dio.get(
+        'data/2.5/weather',
+        queryParameters: {
+          'lat': lat,
+          'lon': lon,
+          'appid': apiKey,
+          'units': 'metric',
+          'lang': lang,
+        },
+      );
+
+      final dto = WeatherDto.fromJson(res.data);
+      return dto.toEntity();
+    });
+  }
+
+  @override
+  Future<ApiResponse<List<ForecastWeather>>> fetchForecastByLocation({
+    required double lat,
+    required double lon,
+    String lang = 'ja',
+  }) {
+    return safeRequest(() async {
+      final res = await dio.get(
+        'data/2.5/forecast',
+        queryParameters: {
+          'lat': lat,
+          'lon': lon,
           'appid': apiKey,
           'units': 'metric',
           'lang': lang,

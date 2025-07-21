@@ -32,6 +32,7 @@ void main() {
       minTemp: 25,
       condition: '曇り',
       time: '09:00',
+      icon: '01d',
     );
     when(
       mockWeatherRepository.fetchCurrentWeather(cityName: cityName, lang: 'ja'),

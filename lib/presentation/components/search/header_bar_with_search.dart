@@ -21,6 +21,7 @@ class HeaderBarWithSearch extends StatelessWidget {
   final VoidCallback onTapSearch;
   final VoidCallback onCancelSearch;
   final VoidCallback onSettingsTap;
+  final void Function(String)? onChanged;
 
   const HeaderBarWithSearch({
     super.key,
@@ -30,6 +31,7 @@ class HeaderBarWithSearch extends StatelessWidget {
     required this.onTapSearch,
     required this.onCancelSearch,
     required this.onSettingsTap,
+    this.onChanged,
   });
 
   @override
@@ -66,6 +68,7 @@ class HeaderBarWithSearch extends StatelessWidget {
                       controller: controller,
                       focusNode: focusNode,
                       onTap: onTapSearch,
+                      onChanged: onChanged,
                       decoration: InputDecoration(
                         hintText: '都市を検索',
                         hintStyle: const TextStyle(color: Colors.white30),

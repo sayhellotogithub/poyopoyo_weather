@@ -3,45 +3,46 @@
 // Date: 2025/07/18
 // Description:
 // -------------------------------------------------------------------
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:poyopoyo_weather/application/usecases/fetch_current_weather_usecase.dart';
-import 'package:poyopoyo_weather/core/network/dio_client.dart';
+import 'package:poyopoyo_weather/application/usecases/fetch_forecaset_by_location_usecase.dart';
+import 'package:poyopoyo_weather/application/usecases/fetch_forecast_usecase.dart';
 import 'package:poyopoyo_weather/data/repositories/weather_repository_impl.dart';
-import 'package:poyopoyo_weather/domain/entities/weather.dart';
+import 'package:poyopoyo_weather/presentation/providers/weather_api_providers.dart';
 
-final dioProvider = Provider((ref) {
-  return DioClient(baseUrl: 'https://api.openweathermap.org/data/2.5').dio;
-});
+import '../../application/usecases/fetch_weather_by_location_usecase.dart';
+import '../state/weather_state.dart';
+import '../viewmodels/weather_view_model.dart';
 
 final weatherRepositoryProvider = Provider((ref) {
-  final apiKey = dotenv.env['OPENWEATHER_API_KEY'];
-  final dio = ref.watch(dioProvider);
-  return WeatherRepositoryImpl(dio: dio, apiKey: apiKey ?? '');
+  final client = ref.read(weatherApiClientProvider);
+  return WeatherRepositoryImpl(dio: client.dio, apiKey: client.apiKey);
 });
 
 final fetchCurrentWeatherUseCaseProvider = Provider((ref) {
   final repo = ref.watch(weatherRepositoryProvider);
   return FetchCurrentWeatherUseCase(repo);
 });
+final fetchCurrentWeatherByLocationUseCaseProvider = Provider((ref) {
+  final repo = ref.watch(weatherRepositoryProvider);
+  return FetchWeatherByLocationUseCase(repo);
+});
+final fetchForecastUseCaseProvider = Provider((ref) {
+  final repo = ref.watch(weatherRepositoryProvider);
+  return FetchForecastUseCase(repo);
+});
 
-final weatherListProvider = StateProvider<List<Weather>>(
-  (ref) => [
-    Weather(
-      city: '東京',
-      temperature: 29,
-      maxTemp: 32,
-      minTemp: 25,
-      condition: '曇り',
-      time: '18:04',
-    ),
-    Weather(
-      city: '中野区',
-      temperature: 29,
-      maxTemp: 32,
-      minTemp: 25,
-      condition: '曇り',
-      time: '18:04',
-    ),
-  ],
-);
+final fetchForecastByLocationUseCaseProvider = Provider((ref) {
+  final repo = ref.watch(weatherRepositoryProvider);
+  return FetchForecastByLocationUseCase(repo);
+});
+
+final weatherViewModelProvider =
+    StateNotifierProvider<WeatherViewModel, WeatherState>((ref) {
+      final currentUseCase = ref.watch(fetchCurrentWeatherUseCaseProvider);
+      final forecastUseCase = ref.watch(fetchForecastUseCaseProvider);
+      return WeatherViewModel(
+        fetchCurrentWeather: currentUseCase,
+        fetchForecast: forecastUseCase,
+      );
+    });

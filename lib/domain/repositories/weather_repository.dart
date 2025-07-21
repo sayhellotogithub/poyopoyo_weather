@@ -14,8 +14,21 @@ abstract class WeatherRepository {
     required String cityName,
     String lang = 'ja',
   });
+
+  Future<ApiResponse<Weather>> fetchCurrentWeatherByLocation({
+    required double lat,
+    required double lon,
+    String lang = 'ja',
+  });
+
   Future<ApiResponse<List<ForecastWeather>>> fetchForecast({
     required String cityName,
+    String lang = 'ja',
+  });
+
+  Future<ApiResponse<List<ForecastWeather>>> fetchForecastByLocation({
+    required double lat,
+    required double lon,
     String lang = 'ja',
   });
 }

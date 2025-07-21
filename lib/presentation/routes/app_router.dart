@@ -28,8 +28,8 @@ final GoRouter router = GoRouter(
     GoRouteX.custom(
       path: weatherDetailPath,
       builder: (_, state) {
-        final weather = state.extra as Weather;
-        return CityWeatherDetailScreen(weather: weather);
+        final cityName = state.extra as String;
+        return CityWeatherDetailScreen(cityName: cityName);
       },
     ),
     // Placeholder for search city screen

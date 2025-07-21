@@ -19,10 +19,10 @@ class WeatherViewModel extends StateNotifier<WeatherState> {
     required this.fetchForecast,
   }) : super(WeatherState.initial());
 
-  Future<void> loadWeather(String cityName) async {
+  Future<void> loadWeather(String cityName, String lang) async {
     state = state.copyWith(isLoading: true, errorMessage: null);
 
-    final currentRes = await fetchCurrentWeather.execute(cityName);
+    final currentRes = await fetchCurrentWeather.execute(cityName, lang: lang);
     final forecastRes = await fetchForecast.execute(cityName);
 
     if (currentRes is ApiFailure && forecastRes is ApiFailure) {

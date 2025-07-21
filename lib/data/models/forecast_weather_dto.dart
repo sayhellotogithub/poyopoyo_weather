@@ -1,7 +1,7 @@
 // -------------------------------------------------------------------
 // Author: WANG JUN
 // Date: 2025/07/19
-// Description: 
+// Description:
 // -------------------------------------------------------------------
 import 'package:json_annotation/json_annotation.dart';
 import 'package:poyopoyo_weather/domain/entities/forecast_weather.dart';
@@ -36,7 +36,8 @@ class ForecastWeatherDto {
     return ForecastWeather(
       dateTime: dateTimeText,
       temperature: (main['temp'] as num).toDouble(),
-      condition: weather.isNotEmpty ? weather[0]['description'] ?? '不明' : '不明',
+      condition: weather.isNotEmpty ? weather[0]['description'] ?? '' : '',
+      icon: weather.isNotEmpty ? weather[0]['icon'] ?? '' : '',
     );
   }
 }

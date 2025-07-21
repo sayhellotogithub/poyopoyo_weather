@@ -15,4 +15,5 @@ class FetchCurrentWeatherUseCase {
   Future<ApiResponse<Weather>> execute(String cityName, {String lang = 'ja'}) {
     return repository.fetchCurrentWeather(cityName: cityName, lang: lang);
   }
+
 }

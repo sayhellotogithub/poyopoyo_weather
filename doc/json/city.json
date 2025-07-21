@@ -1,0 +1,40 @@
+[
+  {
+    "name": "New York",
+    "local_names": {
+      "hi": "न्यूयॊर्क्",
+      "es": "Nueva York",
+      "cy": "Efrog Newydd",
+      "he": "ניו יורק",
+      "fr": "New York",
+      "oc": "Nòva York",
+      "ca": "Nova York",
+      "br": "Evrog Nevez",
+      "el": "Νέα Υόρκη",
+      "ru": "Нью-Йорк",
+      "gl": "Nova York",
+      "ar": "نيويورك",
+      "de": "New York",
+      "vi": "New York",
+      "cs": "New York",
+      "te": "న్యూయొర్క్",
+      "uk": "Нью-Йорк",
+      "fa": "نیویورک",
+      "be": "Нью-Ёрк",
+      "ko": "뉴욕",
+      "eo": "Novjorko",
+      "en": "New York",
+      "kn": "ನ್ಯೂಯೊರ್ಕ್",
+      "pt": "Nova Iorque",
+      "it": "New York",
+      "is": "Nýja Jórvík",
+      "ja": "ニューヨーク",
+      "pl": "Nowy Jork",
+      "zh": "纽约/紐約"
+    },
+    "lat": 40.7127281,
+    "lon": -74.0060152,
+    "country": "US",
+    "state": "New York"
+  }
+]

@@ -1,126 +1,224 @@
 // -------------------------------------------------------------------
 // Author: WANG JUN
 // Date: 2025/07/18
-// Description:
+// Description: Adaptive and Maintainable City Weather Detail Screen
 // -------------------------------------------------------------------
 import 'package:flutter/material.dart';
-import 'package:poyopoyo_weather/domain/entities/weather.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:logger/logger.dart';
 
-class CityWeatherDetailScreen extends StatelessWidget {
-  final Weather weather;
+import '../../domain/entities/forecast_weather.dart';
+import '../providers/locale_provider.dart';
+import '../providers/weather_providers.dart';
+import '../utils/date_time_utils.dart';
+import '../widgets/hourly_temp_chart.dart';
+import '../widgets/weather_icon.dart';
 
-  const CityWeatherDetailScreen({super.key, required this.weather});
+class CityWeatherDetailScreen extends ConsumerStatefulWidget {
+  final String cityName;
+
+  const CityWeatherDetailScreen({super.key, required this.cityName});
+
+  @override
+  ConsumerState<CityWeatherDetailScreen> createState() =>
+      _CityWeatherDetailScreenState();
+}
+
+class _CityWeatherDetailScreenState
+    extends ConsumerState<CityWeatherDetailScreen> {
+  @override
+  void initState() {
+    super.initState();
+    Future.microtask(
+      () => ref
+          .read(weatherViewModelProvider.notifier)
+          .loadWeather(widget.cityName, ref.read(localeProvider).languageCode),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
-    final hourlyTemps = [29, 28, 27, 27, 26, 25]; // mock数据
-    final dailyForecast = [
-      {'day': '今日', 'max': 32, 'min': 25},
-      {'day': '土', 'max': 32, 'min': 24},
-      {'day': '日', 'max': 33, 'min': 25},
-      {'day': '月', 'max': 34, 'min': 26},
-    ]; // 可从API动态生成
+    final state = ref.watch(weatherViewModelProvider);
+    final weather = state.current;
+    final forecastList = state.forecast;
+    final locale = ref.watch(localeProvider);
+
+    if (state.isLoading) {
+      return const Scaffold(body: Center(child: CircularProgressIndicator()));
+    }
+
+    if (state.errorMessage != null) {
+      return Scaffold(body: Center(child: Text(state.errorMessage!)));
+    }
+
+    if (weather == null || forecastList == null || forecastList.isEmpty) {
+      return const Scaffold(body: Center(child: Text('データが見つかりませんでした')));
+    }
+
+    final hourly = forecastList.take(8).toList();
+    final dailyForecast = _groupForecastByDay(forecastList);
 
     return Scaffold(
       appBar: AppBar(title: Text(weather.city)),
-      body: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // 当前天气显示
-          Padding(
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              children: [
-                Text(
-                  '${weather.temperature.toInt()}°C',
-                  style: const TextStyle(fontSize: 60),
-                ),
-                Text(
-                  '${weather.condition}',
-                  style: const TextStyle(fontSize: 20),
-                ),
-                Text(
-                  '最高 ${weather.maxTemp.toInt()}° 最低 ${weather.minTemp.toInt()}°',
-                  style: const TextStyle(fontSize: 16),
-                ),
-              ],
-            ),
-          ),
-          // 天气描述
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: Text(
-              '20:00頃にところにより曇りの予想です。最大風速は12m/sです。',
-              style: const TextStyle(fontSize: 14, color: Colors.grey),
-            ),
-          ),
-          const SizedBox(height: 16),
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            final isSmall = constraints.maxWidth < 360;
+            final iconSize = isSmall ? 40.0 : 50.0;
+            final fontSize = isSmall ? 12.0 : 14.0;
 
-          // 時間帯ごとの天気（横スクロール）
-          SizedBox(
-            height: 80,
-            child: ListView.builder(
-              scrollDirection: Axis.horizontal,
-              itemCount: hourlyTemps.length,
-              itemBuilder: (context, index) {
-                final hour = 18 + index;
-                return Container(
-                  width: 60,
-                  margin: const EdgeInsets.symmetric(horizontal: 4),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text('$hour時'),
-                      const Icon(Icons.cloud, size: 24),
-                      Text('${hourlyTemps[index]}°'),
-                    ],
-                  ),
-                );
-              },
-            ),
-          ),
-
-          const Divider(),
-
-          // 10日間天気予報
-          Padding(
-            padding: const EdgeInsets.all(16),
-            child: Column(
+            return Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text(
-                  '10日間天気予報',
-                  style: TextStyle(fontWeight: FontWeight.bold),
+                _buildCurrentWeather(weather, fontSize),
+                const SizedBox(height: 16),
+                const Divider(),
+                _buildHourlyForecast(
+                  hourly,
+                  iconSize,
+                  fontSize,
+                  locale.languageCode,
                 ),
-                const SizedBox(height: 8),
-                ...dailyForecast.map((day) {
-                  return Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 4),
-                    child: Row(
-                      children: [
-                        SizedBox(width: 50, child: Text(day['day'].toString())),
-                        const Icon(Icons.cloud, size: 20),
-                        const SizedBox(width: 10),
-                        Expanded(
-                          child: LinearProgressIndicator(
-                            value: 0.5,
-                            backgroundColor: Colors.grey[300],
-                            valueColor: AlwaysStoppedAnimation<Color>(
-                              Colors.orange,
-                            ),
-                          ),
-                        ),
-                        const SizedBox(width: 10),
-                        Text('${day['min']}° / ${day['max']}°'),
-                      ],
-                    ),
-                  );
-                }).toList(),
+                const Divider(),
+                _buildDailyForecast(
+                  dailyForecast,
+                  fontSize,
+                  locale.languageCode,
+                ),
+              ],
+            );
+          },
+        ),
+      ),
+    );
+  }
+
+  Widget _buildCurrentWeather(dynamic weather, double fontSize) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          '${weather.temperature.toInt()}°C',
+          style: const TextStyle(fontSize: 48),
+        ),
+        Row(
+          children: [
+            Text(weather.condition, style: TextStyle(fontSize: fontSize + 4)),
+            WeatherIcon(iconCode: weather.icon, size: 40),
+          ],
+        ),
+        Text(
+          '最高 ${weather.maxTemp.toInt()}° 最低 ${weather.minTemp.toInt()}°',
+          style: TextStyle(fontSize: fontSize),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildHourlyForecast(
+    List<ForecastWeather> hourly,
+    double iconSize,
+    double fontSize,
+    String locale,
+  ) {
+    return SizedBox(
+      height: iconSize + fontSize * 2 + 24,
+      child: ListView.separated(
+        scrollDirection: Axis.horizontal,
+        itemCount: hourly.length,
+        separatorBuilder: (_, __) => const SizedBox(width: 6),
+        itemBuilder: (context, index) {
+          final h = hourly[index];
+          return Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(
+                DateTimeUtils.formatLocalizedHour(h.dateTime, locale: locale),
+                style: TextStyle(fontSize: fontSize),
+              ),
+              const SizedBox(height: 4),
+              WeatherIcon(iconCode: h.icon, size: iconSize),
+              const SizedBox(height: 4),
+              Text(
+                '${h.temperature.toInt()}°',
+                style: TextStyle(fontSize: fontSize),
+              ),
+            ],
+          );
+        },
+      ),
+    );
+  }
+
+  Widget _buildDailyForecast(
+    List<Map<String, dynamic>> dailyForecast,
+    double fontSize,
+    String locale,
+  ) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          '5日間予報',
+          style: TextStyle(fontWeight: FontWeight.bold, fontSize: fontSize + 2),
+        ),
+        const SizedBox(height: 8),
+        ...dailyForecast.map(
+          (day) => Padding(
+            padding: const EdgeInsets.symmetric(vertical: 4),
+            child: Row(
+              children: [
+                Text(day['day'], style: TextStyle(fontSize: fontSize)),
+                const SizedBox(width: 10),
+                const Icon(Icons.cloud, size: 20),
+                const SizedBox(width: 20),
+                Expanded(
+                  child: HourlyTempChart(
+                    hourly: List<ForecastWeather>.from(day['hourly']),
+                    locale: locale,
+                    height: 50, // 可选高度压缩一点
+                  ),
+                ),
+                const SizedBox(width: 10),
               ],
             ),
           ),
-        ],
-      ),
+        ),
+      ],
     );
+  }
+
+  List<Map<String, dynamic>> _groupForecastByDay(List<ForecastWeather> list) {
+    final map = <String, List<ForecastWeather>>{};
+    list.sort((a, b) => a.dateTime.compareTo(b.dateTime)); // 保证顺序
+    for (var item in list) {
+      Logger().d('📅 ${item.dateTime} 🌡️ ${item.temperature}°C');
+    }
+    for (var item in list) {
+      final day = DateTimeUtils.extractDate(item.dateTime);
+      map.putIfAbsent(day, () => []).add(item);
+    }
+    final today = DateTimeUtils.extractDate(DateTime.now().toIso8601String());
+
+    return map.entries
+        .where((entry) => entry.key != today) // 🚫 除外今天
+        .map((entry) {
+          final day = entry.key;
+          final values = entry.value;
+          return {
+            'day': day.substring(5), // "MM-DD"
+            'hourly': values,
+            'max': values
+                .map((e) => e.temperature)
+                .reduce((a, b) => a > b ? a : b)
+                .toInt(),
+            'min': values
+                .map((e) => e.temperature)
+                .reduce((a, b) => a < b ? a : b)
+                .toInt(),
+          };
+        })
+        .toList();
   }
 }

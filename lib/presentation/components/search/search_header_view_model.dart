@@ -25,6 +25,8 @@ class SearchHeaderViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
+  bool get isEmpty => controller.text.isEmpty;
+
   @override
   void dispose() {
     controller.dispose();

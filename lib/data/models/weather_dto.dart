@@ -1,7 +1,7 @@
 // -------------------------------------------------------------------
 // Author: WANG JUN
 // Date: 2025/07/19
-// Description: 
+// Description:
 // -------------------------------------------------------------------
 import 'package:json_annotation/json_annotation.dart';
 import 'package:poyopoyo_weather/domain/entities/weather.dart';
@@ -33,11 +33,11 @@ class WeatherDto {
       temperature: (main['temp'] as num).toDouble(),
       maxTemp: (main['temp_max'] as num).toDouble(),
       minTemp: (main['temp_min'] as num).toDouble(),
-      condition: weather.isNotEmpty ? weather[0]['description'] ?? '不明' : '不明',
-      time: DateTime.fromMillisecondsSinceEpoch(dt * 1000)
-          .toLocal()
-          .toIso8601String()
-          .substring(11, 16),
+      condition: weather.isNotEmpty ? weather[0]['description'] ?? '' : '',
+      icon: weather.isNotEmpty ? weather[0]['icon'] ?? '' : '',
+      time: DateTime.fromMillisecondsSinceEpoch(
+        dt * 1000,
+      ).toLocal().toIso8601String().substring(11, 16),
     );
   }
 }

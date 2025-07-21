@@ -1,7 +1,7 @@
 // -------------------------------------------------------------------
 // Author: WANG JUN
 // Date: 2025/07/18
-// Description: 
+// Description:
 // -------------------------------------------------------------------
 class Weather {
   final String city;
@@ -10,6 +10,7 @@ class Weather {
   final double minTemp;
   final String condition;
   final String time;
+  final String icon;
 
   Weather({
     required this.city,
@@ -18,5 +19,6 @@ class Weather {
     required this.minTemp,
     required this.condition,
     required this.time,
+    required this.icon,
   });
 }
