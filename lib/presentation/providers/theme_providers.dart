@@ -3,8 +3,6 @@
 // Date: 2025/07/18
 // Description:
 // -------------------------------------------------------------------
-import 'dart:ui';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:poyopoyo_weather/domain/repositories/theme_repository.dart';
@@ -20,19 +18,15 @@ final themePrefsProvider = Provider<ThemeRepository>((ref) {
   return ThemeRepositoryImpl();
 });
 
-/// 当前使用的主题数据（可切换返回不同 ThemeData）
 final customThemeProvider = Provider<ThemeData>((ref) {
   final mode = ref.watch(themeModeProvider);
-  switch (mode) {
-    case ThemeMode.dark:
-      return AppTheme.darkTheme;
-    case ThemeMode.light:
-      return AppTheme.lightTheme;
-    case ThemeMode.system:
-    default:
-      final brightness = PlatformDispatcher.instance.platformBrightness;
-      return brightness == Brightness.dark
+  return switch (mode) {
+    ThemeMode.light => AppTheme.lightTheme,
+    ThemeMode.dark => AppTheme.darkTheme,
+    ThemeMode.system =>
+      WidgetsBinding.instance.platformDispatcher.platformBrightness ==
+              Brightness.dark
           ? AppTheme.darkTheme
-          : AppTheme.lightTheme;
-  }
+          : AppTheme.lightTheme,
+  };
 });

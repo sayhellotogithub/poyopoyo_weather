@@ -4,16 +4,26 @@
 // Description:
 // -------------------------------------------------------------------
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 class AppTheme {
   // Light theme configuration
   static final lightTheme = ThemeData(
     brightness: Brightness.light,
+
     colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
     scaffoldBackgroundColor: Colors.white,
+
     appBarTheme: const AppBarTheme(
       backgroundColor: Colors.blue,
       foregroundColor: Colors.white,
+      systemOverlayStyle: SystemUiOverlayStyle(
+        systemNavigationBarColor: Color(0xFF000000),
+        systemNavigationBarIconBrightness: Brightness.light,
+        statusBarIconBrightness: Brightness.dark,
+        statusBarBrightness: Brightness.light,
+        statusBarColor: Colors.transparent,
+      ),
     ),
     cardTheme: const CardThemeData(
       color: Colors.white,
@@ -37,6 +47,13 @@ class AppTheme {
     appBarTheme: const AppBarTheme(
       backgroundColor: Colors.black,
       foregroundColor: Colors.white,
+      systemOverlayStyle: SystemUiOverlayStyle(
+        systemNavigationBarColor: Color(0xFF000000),
+        systemNavigationBarIconBrightness: Brightness.light,
+        statusBarIconBrightness: Brightness.light,
+        statusBarBrightness: Brightness.dark,
+        statusBarColor: Colors.transparent,
+      ),
     ),
     cardTheme: const CardThemeData(
       color: Color(0xFF1E1E1E),
