@@ -11,12 +11,14 @@ import 'package:poyopoyo_weather/data/repositories/weather_repository_impl.dart'
 import 'package:poyopoyo_weather/presentation/providers/weather_api_providers.dart';
 
 import '../../application/usecases/fetch_weather_by_location_usecase.dart';
+import '../../data/network/weather_api.dart';
 import '../state/weather_state.dart';
 import '../viewmodels/weather_view_model.dart';
 
 final weatherRepositoryProvider = Provider((ref) {
   final client = ref.read(weatherApiClientProvider);
-  return WeatherRepositoryImpl(dio: client.dio, apiKey: client.apiKey);
+  final api = WeatherApi(client.dio, baseUrl: client.dio.options.baseUrl);
+  return WeatherRepositoryImpl(api: api, apiKey: client.apiKey);
 });
 
 final fetchCurrentWeatherUseCaseProvider = Provider((ref) {

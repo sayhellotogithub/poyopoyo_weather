@@ -3,21 +3,19 @@
 // Date: 2025/07/18
 // Description:
 // -------------------------------------------------------------------
-import 'package:dio/dio.dart';
 import 'package:poyopoyo_weather/core/network/api_response.dart';
 import 'package:poyopoyo_weather/core/network/dio_helper.dart';
 import 'package:poyopoyo_weather/domain/entities/forecast_weather.dart';
 import 'package:poyopoyo_weather/domain/entities/weather.dart';
 import 'package:poyopoyo_weather/domain/repositories/weather_repository.dart';
 
-import '../models/forecast_weather_dto.dart';
-import '../models/weather_dto.dart';
+import '../network/weather_api.dart';
 
 class WeatherRepositoryImpl implements WeatherRepository {
-  final Dio dio;
+  final WeatherApi api;
   final String apiKey;
 
-  WeatherRepositoryImpl({required this.dio, required this.apiKey});
+  WeatherRepositoryImpl({required this.api, required this.apiKey});
 
   @override
   Future<ApiResponse<Weather>> fetchCurrentWeather({
@@ -25,16 +23,12 @@ class WeatherRepositoryImpl implements WeatherRepository {
     String lang = 'ja',
   }) {
     return safeRequest(() async {
-      final res = await dio.get(
-        'data/2.5/weather',
-        queryParameters: {
-          'q': cityName,
-          'appid': apiKey,
-          'lang': lang,
-          'units': 'metric',
-        },
+      final dto = await api.fetchCurrentByCity(
+        cityName,
+        apiKey,
+        lang,
+        'metric',
       );
-      final dto = WeatherDto.fromJson(res.data);
       return dto.toEntity();
     });
   }
@@ -45,22 +39,8 @@ class WeatherRepositoryImpl implements WeatherRepository {
     String lang = 'ja',
   }) {
     return safeRequest(() async {
-      final res = await dio.get(
-        'data/2.5/forecast',
-        queryParameters: {
-          'q': cityName,
-          'appid': apiKey,
-          'units': 'metric',
-          'lang': lang,
-        },
-      );
-
-      final list = res.data['list'] as List<dynamic>;
-      final forecasts = list
-          .map((e) => ForecastWeatherDto.fromJson(e).toEntity())
-          .toList();
-
-      return forecasts;
+      final dto = await api.fetchForecast(cityName, apiKey, lang, 'metric');
+      return dto.list.map((e) => e.toEntity()).toList();
     });
   }
 
@@ -71,18 +51,13 @@ class WeatherRepositoryImpl implements WeatherRepository {
     String lang = 'ja',
   }) {
     return safeRequest(() async {
-      final res = await dio.get(
-        'data/2.5/weather',
-        queryParameters: {
-          'lat': lat,
-          'lon': lon,
-          'appid': apiKey,
-          'units': 'metric',
-          'lang': lang,
-        },
+      final dto = await api.fetchCurrentByLocation(
+        lat,
+        lon,
+        apiKey,
+        lang,
+        'metric',
       );
-
-      final dto = WeatherDto.fromJson(res.data);
       return dto.toEntity();
     });
   }
@@ -94,23 +69,14 @@ class WeatherRepositoryImpl implements WeatherRepository {
     String lang = 'ja',
   }) {
     return safeRequest(() async {
-      final res = await dio.get(
-        'data/2.5/forecast',
-        queryParameters: {
-          'lat': lat,
-          'lon': lon,
-          'appid': apiKey,
-          'units': 'metric',
-          'lang': lang,
-        },
+      final dto = await api.fetchForecastByLocation(
+        lat,
+        lon,
+        apiKey,
+        lang,
+        'metric',
       );
-
-      final list = res.data['list'] as List<dynamic>;
-      final forecasts = list
-          .map((e) => ForecastWeatherDto.fromJson(e).toEntity())
-          .toList();
-
-      return forecasts;
+      return dto.list.map((dto) => dto.toEntity()).toList();
     });
   }
 }

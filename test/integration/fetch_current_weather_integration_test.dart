@@ -7,6 +7,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:poyopoyo_weather/core/network/api_response.dart';
 import 'package:poyopoyo_weather/core/network/dio_client.dart';
+import 'package:poyopoyo_weather/data/network/weather_api.dart';
 import 'package:poyopoyo_weather/data/repositories/weather_repository_impl.dart';
 import 'package:poyopoyo_weather/domain/entities/weather.dart';
 
@@ -27,7 +28,9 @@ void main() async {
         baseUrl: 'https://api.openweathermap.org/data/2.5/',
       ).dio;
 
-      final repo = WeatherRepositoryImpl(dio: dio, apiKey: apiKey ?? "");
+      WeatherApi api = WeatherApi(dio, baseUrl: dio.options.baseUrl);
+
+      final repo = WeatherRepositoryImpl(api: api, apiKey: apiKey ?? "");
       final result = await repo.fetchCurrentWeather(
         cityName: cityName,
         lang: 'en',

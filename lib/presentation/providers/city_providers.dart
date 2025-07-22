@@ -10,10 +10,12 @@ import 'package:poyopoyo_weather/presentation/providers/weather_api_providers.da
 import 'package:poyopoyo_weather/presentation/viewmodels/city_search_view_model.dart';
 
 import '../../application/usecases/search_city_usecase.dart';
+import '../../data/network/city_api.dart';
 
 final cityRepositoryProvider = Provider<CityRepository>((ref) {
-  final client = ref.read(weatherApiClientProvider);
-  return CityRepositoryImpl(dio: client.dio, apiKey: client.apiKey);
+  final client = ref.watch(weatherApiClientProvider);
+  final cityApi = CityApi(client.dio, baseUrl: client.dio.options.baseUrl);
+  return CityRepositoryImpl(api: cityApi, apiKey:client.apiKey);
 });
 final searchCityUseCaseProvider = Provider<SearchCityUseCase>((ref) {
   final repository = ref.read(cityRepositoryProvider);
