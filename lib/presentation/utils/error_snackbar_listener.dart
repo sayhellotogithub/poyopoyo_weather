@@ -10,10 +10,10 @@ import '../../core/base/state_with_error_key.dart';
 import '../../l10n/app_localizations.dart';
 import '../utils/error_translator.dart';
 
-void showErrorOnStateChange<T extends StateNotifier<StateWithErrorKey>>({
+void showErrorOnStateChange<T extends Notifier<StateWithErrorKey>>({
   required WidgetRef ref,
   required BuildContext context,
-  required StateNotifierProvider<T, StateWithErrorKey> provider,
+  required NotifierProvider<T, StateWithErrorKey> provider,
   void Function()? clearError,
 }) {
   ref.listen<StateWithErrorKey>(provider, (prev, next) {

@@ -40,11 +40,4 @@ final fetchForecastByLocationUseCaseProvider = Provider((ref) {
 });
 
 final weatherViewModelProvider =
-    StateNotifierProvider<WeatherViewModel, WeatherState>((ref) {
-      final currentUseCase = ref.watch(fetchCurrentWeatherUseCaseProvider);
-      final forecastUseCase = ref.watch(fetchForecastUseCaseProvider);
-      return WeatherViewModel(
-        fetchCurrentWeather: currentUseCase,
-        fetchForecast: forecastUseCase,
-      );
-    });
+    NotifierProvider<WeatherViewModel, WeatherState>(WeatherViewModel.new);

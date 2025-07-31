@@ -11,23 +11,26 @@ import 'package:poyopoyo_weather/core/network/api_response.dart';
 
 import '../../domain/entities/forecast_weather.dart';
 import '../models/daily_forecast_group.dart';
+import '../providers/weather_providers.dart';
 import '../state/weather_state.dart';
 import '../utils/date_time_utils.dart';
 
-class WeatherViewModel extends StateNotifier<WeatherState> {
-  final FetchCurrentWeatherUseCase fetchCurrentWeather;
-  final FetchForecastUseCase fetchForecast;
+class WeatherViewModel extends Notifier<WeatherState> {
+  late final FetchCurrentWeatherUseCase _fetchCurrentWeather;
+  late final FetchForecastUseCase _fetchForecast;
 
-  WeatherViewModel({
-    required this.fetchCurrentWeather,
-    required this.fetchForecast,
-  }) : super(WeatherState.initial());
+  @override
+  WeatherState build() {
+    _fetchCurrentWeather = ref.watch(fetchCurrentWeatherUseCaseProvider);
+    _fetchForecast = ref.watch(fetchForecastUseCaseProvider);
+    return WeatherState.initial();
+  }
 
   Future<void> loadWeather(String cityName, String lang) async {
     state = state.copyWith(isLoading: true, errorMessage: null);
 
-    final currentRes = await fetchCurrentWeather.execute(cityName, lang: lang);
-    final forecastRes = await fetchForecast.execute(cityName);
+    final currentRes = await _fetchCurrentWeather.execute(cityName, lang: lang);
+    final forecastRes = await _fetchForecast.execute(cityName);
 
     if (currentRes is ApiFailure && forecastRes is ApiFailure) {
       state = state.copyWith(
@@ -55,6 +58,7 @@ class WeatherViewModel extends StateNotifier<WeatherState> {
       );
     }
   }
+
   List<DailyForecastGroup> get groupedForecastByDay {
     final forecastList = state.forecast;
     if (forecastList == null || forecastList.isEmpty) return [];
@@ -69,17 +73,20 @@ class WeatherViewModel extends StateNotifier<WeatherState> {
 
     final today = DateTimeUtils.extractDate(DateTime.now().toIso8601String());
 
-    return map.entries
-        .where((entry) => entry.key != today)
-        .map((entry) {
+    return map.entries.where((entry) => entry.key != today).map((entry) {
       final values = entry.value;
       return DailyForecastGroup(
         day: entry.key.substring(5), // MM-DD
         hourly: values,
-        max: values.map((e) => e.temperature).reduce((a, b) => a > b ? a : b).toInt(),
-        min: values.map((e) => e.temperature).reduce((a, b) => a < b ? a : b).toInt(),
+        max: values
+            .map((e) => e.temperature)
+            .reduce((a, b) => a > b ? a : b)
+            .toInt(),
+        min: values
+            .map((e) => e.temperature)
+            .reduce((a, b) => a < b ? a : b)
+            .toInt(),
       );
-    })
-        .toList();
+    }).toList();
   }
 }

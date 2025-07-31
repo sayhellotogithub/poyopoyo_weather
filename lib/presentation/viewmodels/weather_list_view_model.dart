@@ -10,6 +10,7 @@ import '../../application/usecases/fetch_weather_by_location_usecase.dart';
 import '../../core/base/state_with_error_key.dart';
 import '../../core/network/api_response.dart';
 import '../../domain/entities/weather.dart';
+import '../providers/weather_providers.dart';
 
 class WeatherListState implements StateWithErrorKey {
   final List<Weather> weatherList;
@@ -38,18 +39,23 @@ class WeatherListState implements StateWithErrorKey {
   String? get errorKey => error;
 }
 
-class WeatherListViewModel extends StateNotifier<WeatherListState> {
-  final FetchWeatherByLocationUseCase fetchWeatherByLocationUseCase;
-  final FetchCurrentWeatherUseCase currentWeatherUseCase;
+class WeatherListViewModel extends Notifier<WeatherListState> {
+  late final FetchWeatherByLocationUseCase _fetchWeatherByLocationUseCase;
+  late final FetchCurrentWeatherUseCase _currentWeatherUseCase;
 
-  WeatherListViewModel({
-    required this.currentWeatherUseCase,
-    required this.fetchWeatherByLocationUseCase,
-  }) : super(WeatherListState());
+  @override
+  WeatherListState build() {
+    _fetchWeatherByLocationUseCase = ref.watch(
+      fetchCurrentWeatherByLocationUseCaseProvider,
+    );
+    _currentWeatherUseCase = ref.watch(fetchCurrentWeatherUseCaseProvider);
+
+    return WeatherListState();
+  }
 
   Future<void> addWeatherByLocation(double lat, double lon, String lang) async {
     state = state.copyWith(isLoading: true);
-    final currentRes = await fetchWeatherByLocationUseCase.execute(
+    final currentRes = await _fetchWeatherByLocationUseCase.execute(
       lat,
       lon,
       lang: lang,
@@ -73,7 +79,7 @@ class WeatherListViewModel extends StateNotifier<WeatherListState> {
 
   Future<void> addWeatherByCity(String cityName, String lang) async {
     state = state.copyWith(isLoading: true);
-    final currentRes = await currentWeatherUseCase.execute(
+    final currentRes = await _currentWeatherUseCase.execute(
       cityName,
       lang: lang,
     );

@@ -8,6 +8,8 @@ import 'package:poyopoyo_weather/application/usecases/search_city_usecase.dart';
 import 'package:poyopoyo_weather/core/network/api_response.dart';
 import 'package:poyopoyo_weather/domain/entities/city.dart';
 
+import '../providers/city_providers.dart';
+
 class CitySearchState {
   final bool isLoading;
   final List<City> results;
@@ -32,11 +34,14 @@ class CitySearchState {
   }
 }
 
-class CitySearchViewModel extends StateNotifier<CitySearchState> {
-  final SearchCityUseCase searchCityUseCase;
+class CitySearchViewModel extends Notifier<CitySearchState> {
+  late final SearchCityUseCase _searchCityUseCase;
 
-  CitySearchViewModel({required this.searchCityUseCase})
-    : super(CitySearchState());
+  @override
+  CitySearchState build() {
+    _searchCityUseCase = ref.read(searchCityUseCaseProvider);
+    return CitySearchState();
+  }
 
   void clearResults() {
     state = state.copyWith(results: [], error: null);
@@ -49,7 +54,7 @@ class CitySearchViewModel extends StateNotifier<CitySearchState> {
     }
 
     state = state.copyWith(isLoading: true);
-    final res = await searchCityUseCase.execute(keyword);
+    final res = await _searchCityUseCase.execute(keyword);
     if (res is ApiSuccess) {
       state = state.copyWith(
         results: (res as ApiSuccess).data,

@@ -3,11 +3,13 @@
 // Date: 2025/07/19
 // Description:
 // -------------------------------------------------------------------
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
 import 'package:poyopoyo_weather/core/network/api_response.dart';
 import 'package:poyopoyo_weather/domain/entities/forecast_weather.dart';
 import 'package:poyopoyo_weather/domain/entities/weather.dart';
+import 'package:poyopoyo_weather/presentation/providers/weather_providers.dart';
 import 'package:poyopoyo_weather/presentation/viewmodels/weather_view_model.dart';
 
 import '../../mocks/dummy_values.dart';
@@ -16,6 +18,7 @@ import '../../mocks/mocks.mocks.dart';
 void main() {
   registerAllDummyValues();
 
+  late ProviderContainer container;
   late MockFetchCurrentWeatherUseCase mockCurrentWeatherUseCase;
   late MockFetchForecastUseCase mockForecastUseCase;
   late WeatherViewModel viewModel;
@@ -51,10 +54,12 @@ void main() {
     mockCurrentWeatherUseCase = MockFetchCurrentWeatherUseCase();
     mockForecastUseCase = MockFetchForecastUseCase();
 
-    viewModel = WeatherViewModel(
-      fetchCurrentWeather: mockCurrentWeatherUseCase,
-      fetchForecast: mockForecastUseCase,
-    );
+    container = ProviderContainer(overrides: [
+      fetchCurrentWeatherUseCaseProvider.overrideWithValue(mockCurrentWeatherUseCase),
+      fetchForecastUseCaseProvider.overrideWithValue(mockForecastUseCase),
+    ]);
+
+    viewModel = container.read(weatherViewModelProvider.notifier);
   });
 
   test('both successful', () async {
@@ -103,5 +108,10 @@ void main() {
     expect(viewModel.state.current, isNull);
     expect(viewModel.state.forecast, isNull);
     expect(viewModel.state.errorMessage, contains('ネットワークエラー'));
+  });
+
+
+  tearDown(() {
+    container.dispose();
   });
 }

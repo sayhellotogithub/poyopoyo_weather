@@ -15,7 +15,7 @@ import '../../data/network/city_api.dart';
 final cityRepositoryProvider = Provider<CityRepository>((ref) {
   final client = ref.watch(weatherApiClientProvider);
   final cityApi = CityApi(client.dio, baseUrl: client.dio.options.baseUrl);
-  return CityRepositoryImpl(api: cityApi, apiKey:client.apiKey);
+  return CityRepositoryImpl(api: cityApi, apiKey: client.apiKey);
 });
 final searchCityUseCaseProvider = Provider<SearchCityUseCase>((ref) {
   final repository = ref.read(cityRepositoryProvider);
@@ -23,8 +23,6 @@ final searchCityUseCaseProvider = Provider<SearchCityUseCase>((ref) {
 });
 
 final citySearchViewModelProvider =
-    StateNotifierProvider<CitySearchViewModel, CitySearchState>(
-      (ref) => CitySearchViewModel(
-        searchCityUseCase: ref.read(searchCityUseCaseProvider),
-      ),
+    NotifierProvider<CitySearchViewModel, CitySearchState>(
+      CitySearchViewModel.new,
     );
