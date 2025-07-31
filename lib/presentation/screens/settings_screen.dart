@@ -7,9 +7,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:poyopoyo_weather/l10n/app_localizations.dart';
-import 'package:poyopoyo_weather/presentation/providers/locale_provider.dart';
-import 'package:poyopoyo_weather/presentation/providers/theme_providers.dart';
 import 'package:poyopoyo_weather/presentation/viewmodels/settings_view_model.dart';
+
+import '../providers/locale_provider.dart';
+import '../providers/theme_providers.dart';
 
 class SettingsScreen extends ConsumerWidget {
   const SettingsScreen({super.key});
@@ -17,9 +18,9 @@ class SettingsScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final viewModel = ref.watch(settingsViewModelProvider);
-    final themeMode = ref.watch(themeModeProvider);
-    final locale = ref.watch(localeProvider);
     final local = AppLocalizations.of(context)!;
+    final currentThemeMode = ref.watch(themeModeProvider);
+    final currentLocale = ref.watch(localeProvider);
 
     return Scaffold(
       appBar: AppBar(title: Text(local.settings)),
@@ -29,14 +30,14 @@ class SettingsScreen extends ConsumerWidget {
           RadioListTile<ThemeMode>(
             title: Text(local.light),
             value: ThemeMode.light,
-            groupValue: themeMode,
+            groupValue: currentThemeMode,
             onChanged: (value) =>
                 value != null ? viewModel.changeTheme(value) : null,
           ),
           RadioListTile<ThemeMode>(
             title: Text(local.dark),
             value: ThemeMode.dark,
-            groupValue: themeMode,
+            groupValue: currentThemeMode,
             onChanged: (value) =>
                 value != null ? viewModel.changeTheme(value) : null,
           ),
@@ -45,14 +46,14 @@ class SettingsScreen extends ConsumerWidget {
           RadioListTile<Locale>(
             title: Text(local.japanese),
             value: const Locale('ja'),
-            groupValue: locale,
+            groupValue: currentLocale,
             onChanged: (value) =>
                 value != null ? viewModel.changeLocale(value) : null,
           ),
           RadioListTile<Locale>(
             title: Text(local.english),
             value: const Locale('en'),
-            groupValue: locale,
+            groupValue:currentLocale,
             onChanged: (value) =>
                 value != null ? viewModel.changeLocale(value) : null,
           ),

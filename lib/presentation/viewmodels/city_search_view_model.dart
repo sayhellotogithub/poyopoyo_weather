@@ -44,7 +44,7 @@ class CitySearchViewModel extends StateNotifier<CitySearchState> {
 
   Future<void> search(String keyword) async {
     if (keyword.isEmpty) {
-      state = state.copyWith(results: []);
+      state = state.copyWith(results: [], error: null, isLoading: false);
       return;
     }
 

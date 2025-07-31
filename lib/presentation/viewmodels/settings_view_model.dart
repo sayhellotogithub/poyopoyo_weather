@@ -43,8 +43,4 @@ class SettingsViewModel {
     final localeRepo = ref.read(localePrefsProvider);
     await localeRepo.saveLocale(locale);
   }
-
-  ThemeMode get currentThemeMode => ref.read(themeModeProvider);
-
-  Locale get currentLocale => ref.read(localeProvider);
 }
